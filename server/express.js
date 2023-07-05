@@ -8,7 +8,7 @@ import helmet from 'helmet'
 import Template from './../template'
 import userRoutes from './routes/user.routes'
 import authRoutes from './routes/auth.routes'
-import courseRoutes from './routes/course.routes'
+import groupRoutes from './routes/group.routes'
 import enrollmentRoutes from './routes/enrollment.routes'
 
 // modules for server side rendering
@@ -45,7 +45,7 @@ app.use('/dist', express.static(path.join(CURRENT_WORKING_DIR, 'dist')))
 // mount routes
 app.use('/', userRoutes)
 app.use('/', authRoutes)
-app.use('/', courseRoutes)
+app.use('/', groupRoutes)
 app.use('/', enrollmentRoutes)
 
 app.get('*', (req, res) => {

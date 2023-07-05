@@ -16,9 +16,9 @@ import ListItemAvatar from '@material-ui/core/ListItemAvatar'
 import Avatar from '@material-ui/core/Avatar'
 import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction'
 import ListItemText from '@material-ui/core/ListItemText'
-import {read, update} from './api-course.js'
+import {read, update} from './api-group.js'
 import {Link, Redirect} from 'react-router-dom'
-import auth from './../auth/auth-helper'
+import auth from '../auth/auth-helper.js'
 import Divider from '@material-ui/core/Divider'
 
 const useStyles = makeStyles(theme => ({
@@ -79,15 +79,15 @@ const useStyles = makeStyles(theme => ({
   }
 }))
 
-export default function EditCourse ({match}) {
+export default function EditGroup ({match}) {
   const classes = useStyles()
-  const [course, setCourse] = useState({
+  const [group, setGroup] = useState({
       name: '',
       description: '',
       image:'',
       category:'',
       instructor:{},
-      lessons: []
+      labs: []
     })
   const [values, setValues] = useState({
       redirect: false,
@@ -97,54 +97,54 @@ export default function EditCourse ({match}) {
       const abortController = new AbortController()
       const signal = abortController.signal
   
-      read({courseId: match.params.courseId}, signal).then((data) => {
+      read({groupId: match.params.groupId}, signal).then((data) => {
         if (data.error) {
           setValues({...values, error: data.error})
         } else {
           data.image = ''
-          setCourse(data)
+          setGroup(data)
         }
       })
     return function cleanup(){
       abortController.abort()
     }
-  }, [match.params.courseId])
+  }, [match.params.groupId])
   const jwt = auth.isAuthenticated()
   const handleChange = name => event => {
     const value = name === 'image'
     ? event.target.files[0]
     : event.target.value
-    setCourse({ ...course, [name]: value })
+    setGroup({ ...group, [name]: value })
   }
-  const handleLessonChange = (name, index) => event => {
-    const lessons = course.lessons
-    lessons[index][name] =  event.target.value
-    setCourse({ ...course, lessons: lessons })
+  const handleLabChange = (name, index) => event => {
+    const labs = group.labs
+    labs[index][name] =  event.target.value
+    setGroup({ ...group, labs: labs })
   }
-  const deleteLesson = index => event => {
-    const lessons = course.lessons
-    lessons.splice(index, 1)
-    setCourse({...course, lessons:lessons})
+  const deleteLab = index => event => {
+    const labs = group.labs
+    labs.splice(index, 1)
+    setGroup({...group, labs:labs})
  }
   const moveUp = index => event => {
-      const lessons = course.lessons
-      const moveUp = lessons[index]
-      lessons[index] = lessons[index-1]
-      lessons[index-1] = moveUp
-      setCourse({ ...course, lessons: lessons })
+      const labs = group.labs
+      const moveUp = labs[index]
+      labs[index] = labs[index-1]
+      labs[index-1] = moveUp
+      setGroup({ ...group, labs: labs })
   }
   const clickSubmit = () => {
-    let courseData = new FormData()
-    course.name && courseData.append('name', course.name)
-    course.description && courseData.append('description', course.description)
-    course.image && courseData.append('image', course.image)
-    course.category && courseData.append('category', course.category)
-    courseData.append('lessons', JSON.stringify(course.lessons))
+    let groupData = new FormData()
+    group.name && groupData.append('name', group.name)
+    group.description && groupData.append('description', group.description)
+    group.image && groupData.append('image', group.image)
+    group.category && groupData.append('category', group.category)
+    groupData.append('labs', JSON.stringify(group.labs))
     update({
-        courseId: match.params.courseId
+        groupId: match.params.groupId
       }, {
         t: jwt.token
-      }, courseData).then((data) => {
+      }, groupData).then((data) => {
         if (data && data.error) {
             console.log(data.error)
           setValues({...values, error: data.error})
@@ -154,11 +154,11 @@ export default function EditCourse ({match}) {
       })
   }
   if (values.redirect) {
-    return (<Redirect to={'/teach/course/'+course._id}/>)
+    return (<Redirect to={'/teach/group/'+group._id}/>)
   }
-    const imageUrl = course._id
-          ? `/api/courses/photo/${course._id}?${new Date().getTime()}`
-          : '/api/courses/defaultphoto'
+    const imageUrl = group._id
+          ? `/api/groups/photo/${group._id}?${new Date().getTime()}`
+          : '/api/groups/defaultphoto'
     return (
         <div className={classes.root}>
               <Card className={classes.card}>
@@ -168,21 +168,21 @@ export default function EditCourse ({match}) {
                     label="Title"
                     type="text"
                     fullWidth
-                    value={course.name} onChange={handleChange('name')}
+                    value={group.name} onChange={handleChange('name')}
                   />}
                   subheader={<div>
-                        <Link to={"/user/"+course.instructor._id} className={classes.sub}>By {course.instructor.name}</Link>
+                        <Link to={"/user/"+group.instructor._id} className={classes.sub}>By {group.instructor.name}</Link>
                         {<TextField
                     margin="dense"
                     label="Category"
                     type="text"
                     fullWidth
-                    value={course.category} onChange={handleChange('category')}
+                    value={group.category} onChange={handleChange('category')}
                   />}
                       </div>
                     }
                   action={
-             auth.isAuthenticated().user && auth.isAuthenticated().user._id == course.instructor._id &&
+             auth.isAuthenticated().user && auth.isAuthenticated().user._id == group.instructor._id &&
                 (<span className={classes.action}><Button variant="contained" color="secondary" onClick={clickSubmit}>Save</Button>
                     </span>)
             }
@@ -191,7 +191,7 @@ export default function EditCourse ({match}) {
                   <CardMedia
                     className={classes.media}
                     image={imageUrl}
-                    title={course.name}
+                    title={group.name}
                   />
                   <div className={classes.details}>
                   <TextField
@@ -201,7 +201,7 @@ export default function EditCourse ({match}) {
                     label="Description"
                     type="text"
                     className={classes.textfield}
-                    value={course.description} onChange={handleChange('description')}
+                    value={group.description} onChange={handleChange('description')}
                   /><br/><br/>
                   <input accept="image/*" onChange={handleChange('image')} className={classes.input} id="icon-button-file" type="file" />
                  <label htmlFor="icon-button-file">
@@ -209,7 +209,7 @@ export default function EditCourse ({match}) {
                     Change Photo
                     <FileUpload/>
                     </Button>
-                </label> <span className={classes.filename}>{course.image ? course.image.name : ''}</span><br/>
+                </label> <span className={classes.filename}>{group.image ? group.image.name : ''}</span><br/>
                   </div>
                 
 
@@ -217,12 +217,12 @@ export default function EditCourse ({match}) {
                 <Divider/>
                 <div>
                 <CardHeader
-                  title={<Typography variant="h6" className={classes.subheading}>Lessons - Edit and Rearrange</Typography>
+                  title={<Typography variant="h6" className={classes.subheading}>Labs - Edit and Rearrange</Typography>
                 }
-                  subheader={<Typography variant="body1" className={classes.subheading}>{course.lessons && course.lessons.length} lessons</Typography>}
+                  subheader={<Typography variant="body1" className={classes.subheading}>{group.labs && group.labs.length} labs</Typography>}
                 />
                 <List>
-                {course.lessons && course.lessons.map((lesson, index) => {
+                {group.labs && group.labs.map((lab, index) => {
                     return(<span key={index}>
                     <ListItem className={classes.list}>
                     <ListItemAvatar>
@@ -243,7 +243,7 @@ export default function EditCourse ({match}) {
                             label="Title"
                             type="text"
                             fullWidth
-                            value={lesson.title} onChange={handleLessonChange('title', index)}
+                            value={lab.title} onChange={handleLabChange('title', index)}
                           /><br/>
                           <TextField
                           margin="dense"
@@ -252,18 +252,18 @@ export default function EditCourse ({match}) {
                           label="Content"
                           type="text"
                           fullWidth
-                          value={lesson.content} onChange={handleLessonChange('content', index)}
+                          value={lab.content} onChange={handleLabChange('content', index)}
                         /><br/>
                         <TextField
             margin="dense"
             label="Resource link"
             type="text"
             fullWidth
-            value={lesson.resource_url} onChange={handleLessonChange('resource_url', index)}
+            value={lab.resource_url} onChange={handleLabChange('resource_url', index)}
           /><br/></>}
                     />
-                    {!course.published && <ListItemSecondaryAction>
-                    <IconButton edge="end" aria-label="up" color="primary" onClick={deleteLesson(index)}>
+                    {!group.published && <ListItemSecondaryAction>
+                    <IconButton edge="end" aria-label="up" color="primary" onClick={deleteLab(index)}>
                         <DeleteIcon />
                       </IconButton>
                     </ListItemSecondaryAction>}

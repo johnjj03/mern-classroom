@@ -1,7 +1,7 @@
-import Course from '../models/course.model'
+import Group from '../models/group.model'
 import extend from 'lodash/extend'
 import fs from 'fs'
-import errorHandler from './../helpers/dbErrorHandler'
+import errorHandler from '../helpers/dbErrorHandler'
 import formidable from 'formidable'
 import defaultImage from './../../client/assets/images/default.png'
 
@@ -14,14 +14,14 @@ const create = (req, res) => {
         error: "Image could not be uploaded"
       })
     }
-    let course = new Course(fields)
-    course.instructor= req.profile
+    let group = new Group(fields)
+    group.instructor= req.profile
     if(files.image){
-      course.image.data = fs.readFileSync(files.image.path)
-      course.image.contentType = files.image.type
+      group.image.data = fs.readFileSync(files.image.path)
+      group.image.contentType = files.image.type
     }
     try {
-      let result = await course.save()
+      let result = await group.save()
       res.json(result)
     }catch (err){
       return res.status(400).json({
@@ -32,33 +32,33 @@ const create = (req, res) => {
 }
 
 /**
- * Load course and append to req.
+ * Load group and append to req.
  */
-const courseByID = async (req, res, next, id) => {
+const groupByID = async (req, res, next, id) => {
   try {
-    let course = await Course.findById(id).populate('instructor', '_id name')
-    if (!course)
+    let group = await Group.findById(id).populate('instructor', '_id name')
+    if (!group)
       return res.status('400').json({
-        error: "Course not found"
+        error: "Group not found"
       })
-    req.course = course
+    req.group = group
     next()
   } catch (err) {
     return res.status('400').json({
-      error: "Could not retrieve course"
+      error: "Could not retrieve group"
     })
   }
 }
 
 const read = (req, res) => {
-  req.course.image = undefined
-  return res.json(req.course)
+  req.group.image = undefined
+  return res.json(req.group)
 }
 
 const list = async (req, res) => {
   try {
-    let courses = await Course.find().select('name email updated created')
-    res.json(courses)
+    let groups = await Group.find().select('name email updated created')
+    res.json(groups)
   } catch (err) {
     return res.status(400).json({
       error: errorHandler.getErrorMessage(err)
@@ -75,19 +75,19 @@ const update = async (req, res) => {
         error: "Photo could not be uploaded"
       })
     }
-    let course = req.course
-    course = extend(course, fields)
-    if(fields.lessons){
-      course.lessons = JSON.parse(fields.lessons)
+    let group = req.group
+    group = extend(group, fields)
+    if(fields.labs){
+      group.labs = JSON.parse(fields.labs)
     }
-    course.updated = Date.now()
+    group.updated = Date.now()
     if(files.image){
-      course.image.data = fs.readFileSync(files.image.path)
-      course.image.contentType = files.image.type
+      group.image.data = fs.readFileSync(files.image.path)
+      group.image.contentType = files.image.type
     }
     try {
-      await course.save()
-      res.json(course)
+      await group.save()
+      res.json(group)
     } catch (err) {
       return res.status(400).json({
         error: errorHandler.getErrorMessage(err)
@@ -96,10 +96,10 @@ const update = async (req, res) => {
   })
 }
 
-const newLesson = async (req, res) => {
+const newLab = async (req, res) => {
   try {
-    let lesson = req.body.lesson
-    let result = await Course.findByIdAndUpdate(req.course._id, {$push: {lessons: lesson}, updated: Date.now()}, {new: true})
+    let lab = req.body.lab
+    let result = await Group.findByIdAndUpdate(req.group._id, {$push: {labs: lab}, updated: Date.now()}, {new: true})
                             .populate('instructor', '_id name')
                             .exec()
     res.json(result)
@@ -112,9 +112,9 @@ const newLesson = async (req, res) => {
 
 const remove = async (req, res) => {
   try {
-    let course = req.course
-    let deleteCourse = await course.remove()
-    res.json(deleteCourse)
+    let group = req.group
+    let deleteGroup = await group.remove()
+    res.json(deleteGroup)
   } catch (err) {
     return res.status(400).json({
       error: errorHandler.getErrorMessage(err)
@@ -123,7 +123,7 @@ const remove = async (req, res) => {
 }
 
 const isInstructor = (req, res, next) => {
-    const isInstructor = req.course && req.auth && req.course.instructor._id == req.auth._id
+    const isInstructor = req.group && req.auth && req.group.instructor._id == req.auth._id
     if(!isInstructor){
       return res.status('403').json({
         error: "User is not authorized"
@@ -133,31 +133,31 @@ const isInstructor = (req, res, next) => {
 }
 
 const listByInstructor = (req, res) => {
-  Course.find({instructor: req.profile._id}, (err, courses) => {
+  Group.find({instructor: req.profile._id}, (err, groups) => {
     if (err) {
       return res.status(400).json({
         error: errorHandler.getErrorMessage(err)
       })
     }
-    res.json(courses)
+    res.json(groups)
   }).populate('instructor', '_id name')
 }
 
 const listPublished = (req, res) => {
-  Course.find({published: true}, (err, courses) => {
+  Group.find({published: true}, (err, groups) => {
     if (err) {
       return res.status(400).json({
         error: errorHandler.getErrorMessage(err)
       })
     }
-    res.json(courses)
+    res.json(groups)
   }).populate('instructor', '_id name')
 }
 
 const photo = (req, res, next) => {
-  if(req.course.image.data){
-    res.set("Content-Type", req.course.image.contentType)
-    return res.send(req.course.image.data)
+  if(req.group.image.data){
+    res.set("Content-Type", req.group.image.contentType)
+    return res.send(req.group.image.data)
   }
   next()
 }
@@ -168,7 +168,7 @@ const defaultPhoto = (req, res) => {
 
 export default {
   create,
-  courseByID,
+  groupByID,
   read,
   list,
   remove,
@@ -177,6 +177,6 @@ export default {
   listByInstructor,
   photo,
   defaultPhoto,
-  newLesson,
+  newLab,
   listPublished
 }

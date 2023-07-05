@@ -8,8 +8,8 @@ import DialogContent from '@material-ui/core/DialogContent'
 import DialogTitle from '@material-ui/core/DialogTitle'
 import Add from '@material-ui/icons/AddBox'
 import {makeStyles} from '@material-ui/core/styles'
-import {newLesson} from './api-course'
-import auth from './../auth/auth-helper'
+import {newLab} from './api-group'
+import auth from '../auth/auth-helper'
 
 const useStyles = makeStyles(theme => ({
     form: {
@@ -17,7 +17,7 @@ const useStyles = makeStyles(theme => ({
     }
 }))
 
-export default function NewLesson(props) {
+export default function NewLab(props) {
   const classes = useStyles()
   const [open, setOpen] = useState(false)
   const [values, setValues] = useState({
@@ -31,20 +31,20 @@ export default function NewLesson(props) {
   }
   const clickSubmit = () => {
     const jwt = auth.isAuthenticated()
-    const lesson = {
+    const lab = {
       title: values.title || undefined,
       content: values.content || undefined,
       resource_url: values.resource_url || undefined
     }
-    newLesson({
-      courseId: props.courseId
+    newLab({
+      groupId: props.groupId
     }, {
       t: jwt.token
-    }, lesson).then((data) => {
+    }, lab).then((data) => {
       if (data && data.error) {
         setValues({...values, error: data.error})
       } else {
-          props.addLesson(data)
+          props.addLab(data)
           setValues({...values, title: '',
           content: '',
           resource_url: ''})
@@ -62,12 +62,12 @@ export default function NewLesson(props) {
 
   return (
     <div>
-      <Button aria-label="Add Lesson" color="primary" variant="contained" onClick={handleClickOpen}>
-        <Add/> &nbsp; New Lesson
+      <Button aria-label="Add Lab" color="primary" variant="contained" onClick={handleClickOpen}>
+        <Add/> &nbsp; New Lab
       </Button>
       <Dialog open={open} onClose={handleClose} aria-labelledby="form-dialog-title">
       <div className={classes.form}>
-        <DialogTitle id="form-dialog-title">Add New Lesson</DialogTitle>
+        <DialogTitle id="form-dialog-title">Add New Lab</DialogTitle>
         <DialogContent>
           
           <TextField
@@ -109,7 +109,7 @@ export default function NewLesson(props) {
     </div>
   )
 }
-NewLesson.propTypes = {
-    courseId: PropTypes.string.isRequired,
-    addLesson: PropTypes.func.isRequired
+NewLab.propTypes = {
+    groupId: PropTypes.string.isRequired,
+    addLab: PropTypes.func.isRequired
   }

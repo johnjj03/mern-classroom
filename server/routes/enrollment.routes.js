@@ -1,6 +1,6 @@
 import express from 'express'
 import enrollmentCtrl from '../controllers/enrollment.controller'
-import courseCtrl from '../controllers/course.controller'
+import groupCtrl from '../controllers/group.controller'
 import authCtrl from '../controllers/auth.controller'
 
 const router = express.Router()
@@ -8,10 +8,10 @@ const router = express.Router()
 router.route('/api/enrollment/enrolled')
   .get(authCtrl.requireSignin, enrollmentCtrl.listEnrolled)
 
-router.route('/api/enrollment/new/:courseId')
+router.route('/api/enrollment/new/:groupId')
   .post(authCtrl.requireSignin, enrollmentCtrl.findEnrollment, enrollmentCtrl.create)  
 
-router.route('/api/enrollment/stats/:courseId')
+router.route('/api/enrollment/stats/:groupId')
   .get(enrollmentCtrl.enrollmentStats)
 
 router.route('/api/enrollment/complete/:enrollmentId')
@@ -21,7 +21,7 @@ router.route('/api/enrollment/:enrollmentId')
   .get(authCtrl.requireSignin, enrollmentCtrl.isStudent, enrollmentCtrl.read)
   .delete(authCtrl.requireSignin, enrollmentCtrl.isStudent, enrollmentCtrl.remove)
 
-router.param('courseId', courseCtrl.courseByID)
+router.param('groupId', groupCtrl.groupByID)
 router.param('enrollmentId', enrollmentCtrl.enrollmentByID)
 
 export default router

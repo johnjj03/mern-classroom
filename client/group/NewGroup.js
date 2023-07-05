@@ -4,12 +4,12 @@ import CardActions from '@material-ui/core/CardActions'
 import CardContent from '@material-ui/core/CardContent'
 import Button from '@material-ui/core/Button'
 import FileUpload from '@material-ui/icons/AddPhotoAlternate'
-import auth from './../auth/auth-helper'
+import auth from '../auth/auth-helper'
 import TextField from '@material-ui/core/TextField'
 import Typography from '@material-ui/core/Typography'
 import Icon from '@material-ui/core/Icon'
 import { makeStyles } from '@material-ui/core/styles'
-import {create} from './api-course.js'
+import {create} from './api-group.js'
 import {Link, Redirect} from 'react-router-dom'
 
 const useStyles = makeStyles(theme => ({
@@ -44,7 +44,7 @@ const useStyles = makeStyles(theme => ({
   }
 }))
 
-export default function NewCourse() {
+export default function NewGroup() {
   const classes = useStyles()
   const [values, setValues] = useState({
       name: '',
@@ -63,16 +63,16 @@ export default function NewCourse() {
     setValues({...values, [name]: value })
   }
   const clickSubmit = () => {
-    let courseData = new FormData()
-    values.name && courseData.append('name', values.name)
-    values.description && courseData.append('description', values.description)
-    values.image && courseData.append('image', values.image)
-    values.category && courseData.append('category', values.category)
+    let groupData = new FormData()
+    values.name && groupData.append('name', values.name)
+    values.description && groupData.append('description', values.description)
+    values.image && groupData.append('image', values.image)
+    values.category && groupData.append('category', values.category)
     create({
       userId: jwt.user._id
     }, {
       t: jwt.token
-    }, courseData).then((data) => {
+    }, groupData).then((data) => {
       if (data.error) {
         setValues({...values, error: data.error})
       } else {
@@ -82,13 +82,13 @@ export default function NewCourse() {
   }
 
     if (values.redirect) {
-      return (<Redirect to={'/teach/courses'}/>)
+      return (<Redirect to={'/teach/groups'}/>)
     }
     return (<div>
       <Card className={classes.card}>
         <CardContent>
           <Typography variant="h6" className={classes.title}>
-            New Course
+            New Group
           </Typography>
           <br/>
           <input accept="image/*" onChange={handleChange('image')} className={classes.input} id="icon-button-file" type="file" />
@@ -118,7 +118,7 @@ export default function NewCourse() {
         </CardContent>
         <CardActions>
           <Button color="primary" variant="contained" onClick={clickSubmit} className={classes.submit}>Submit</Button>
-          <Link to='/teach/courses' className={classes.submit}><Button variant="contained">Cancel</Button></Link>
+          <Link to='/teach/groups' className={classes.submit}><Button variant="contained">Cancel</Button></Link>
         </CardActions>
       </Card>
     </div>)

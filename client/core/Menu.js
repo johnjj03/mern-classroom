@@ -25,7 +25,7 @@ const Menu = withRouter(({history}) => (
   <AppBar position="fixed" style={{zIndex:12343455}}>
     <Toolbar>
       <Typography variant="h6" color="inherit">
-        MERN Classroom
+        Randomised InSecure Container Generator
       </Typography>
       <div>
         <Link to="/">
@@ -49,7 +49,7 @@ const Menu = withRouter(({history}) => (
       }
       {
         auth.isAuthenticated() && (<span>
-          {auth.isAuthenticated().user.educator && (<Link to="/teach/courses"><Button style={isPartActive(history, "/teach/")}><Library/> Teach</Button></Link>)}
+          {auth.isAuthenticated().user.educator && (<Link to="/teach/groups"><Button style={isPartActive(history, "/teach/")}><Library/> Teach</Button></Link>)}
           <Link to={"/user/" + auth.isAuthenticated().user._id}>
             <Button style={isActive(history, "/user/" + auth.isAuthenticated().user._id)}>My Profile</Button>
           </Link>

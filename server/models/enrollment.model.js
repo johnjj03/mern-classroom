@@ -1,7 +1,7 @@
 import mongoose from 'mongoose'
 
 const EnrollmentSchema = new mongoose.Schema({
-  course: {type: mongoose.Schema.ObjectId, ref: 'Course'},
+  group: {type: mongoose.Schema.ObjectId, ref: 'Group'},
   updated: Date,
   enrolled: {
     type: Date,
@@ -9,7 +9,7 @@ const EnrollmentSchema = new mongoose.Schema({
   },
   student: {type: mongoose.Schema.ObjectId, ref: 'User'},
   lessonStatus: [{
-      lesson: {type: mongoose.Schema.ObjectId, ref: 'Lesson'}, 
+      lesson: {type: mongoose.Schema.ObjectId, ref: 'Lab'}, 
       complete: Boolean}],
   completed: Date
 })

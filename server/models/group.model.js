@@ -1,12 +1,12 @@
 import mongoose from 'mongoose'
 
-const LessonSchema = new mongoose.Schema({
+const LabSchema = new mongoose.Schema({
   title: String,
   content: String,
   resource_url: String
 })
-const Lesson = mongoose.model('Lesson', LessonSchema)
-const CourseSchema = new mongoose.Schema({
+const Lab = mongoose.model('Lab', LabSchema)
+const GroupSchema = new mongoose.Schema({
   name: {
     type: String,
     trim: true,
@@ -34,7 +34,7 @@ const CourseSchema = new mongoose.Schema({
     type: Boolean,
     default: false
   },
-  lessons: [LessonSchema]
+  labs: [LabSchema]
 })
 
-export default mongoose.model('Course', CourseSchema)
+export default mongoose.model('Group', GroupSchema)

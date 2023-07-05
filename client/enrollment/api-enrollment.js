@@ -1,6 +1,6 @@
 const create = async (params, credentials) => {
     try {
-        let response = await fetch('/api/enrollment/new/'+params.courseId, {
+        let response = await fetch('/api/enrollment/new/'+params.groupId, {
           method: 'POST',
           headers: {
             'Accept': 'application/json',
@@ -32,7 +32,7 @@ const create = async (params, credentials) => {
 
   const enrollmentStats = async (params, credentials, signal) => {
     try {
-      let response = await fetch('/api/enrollment/stats/'+params.courseId, {
+      let response = await fetch('/api/enrollment/stats/'+params.groupId, {
         method: 'GET',
         headers: {
             'Accept': 'application/json',

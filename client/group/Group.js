@@ -14,18 +14,18 @@ import ListItem from '@material-ui/core/ListItem'
 import ListItemAvatar from '@material-ui/core/ListItemAvatar'
 import Avatar from '@material-ui/core/Avatar'
 import ListItemText from '@material-ui/core/ListItemText'
-import {read, update} from './api-course.js'
-import {enrollmentStats} from './../enrollment/api-enrollment'
+import {read, update} from './api-group.js'
+import {enrollmentStats} from '../enrollment/api-enrollment.js'
 import {Link, Redirect} from 'react-router-dom'
-import auth from './../auth/auth-helper'
-import DeleteCourse from './DeleteCourse'
+import auth from '../auth/auth-helper.js'
+import DeleteGroup from './DeleteGroup.js'
 import Divider from '@material-ui/core/Divider'
-import NewLesson from './NewLesson'
+import NewLab from './NewLab.js'
 import Dialog from '@material-ui/core/Dialog'
 import DialogActions from '@material-ui/core/DialogActions'
 import DialogContent from '@material-ui/core/DialogContent'
 import DialogTitle from '@material-ui/core/DialogTitle'
-import Enroll from './../enrollment/Enroll'
+import Enroll from '../enrollment/Enroll.js'
 
 const useStyles = makeStyles(theme => ({
     root: theme.mixins.gutters({
@@ -90,10 +90,10 @@ const useStyles = makeStyles(theme => ({
   }
 }))
 
-export default function Course ({match}) {
+export default function Group ({match}) {
   const classes = useStyles()
   const [stats, setStats] = useState({})
-  const [course, setCourse] = useState({instructor:{}})
+  const [group, setGroup] = useState({instructor:{}})
   const [values, setValues] = useState({
       redirect: false,
       error: ''
@@ -104,22 +104,22 @@ export default function Course ({match}) {
       const abortController = new AbortController()
       const signal = abortController.signal
   
-      read({courseId: match.params.courseId}, signal).then((data) => {
+      read({groupId: match.params.groupId}, signal).then((data) => {
         if (data.error) {
           setValues({...values, error: data.error})
         } else {
-          setCourse(data)
+          setGroup(data)
         }
       })
     return function cleanup(){
       abortController.abort()
     }
-  }, [match.params.courseId])
+  }, [match.params.groupId])
   useEffect(() => {
     const abortController = new AbortController()
     const signal = abortController.signal
 
-    enrollmentStats({courseId: match.params.courseId}, {t:jwt.token}, signal).then((data) => {
+    enrollmentStats({groupId: match.params.groupId}, {t:jwt.token}, signal).then((data) => {
       if (data.error) {
         setValues({...values, error: data.error})
       } else {
@@ -129,30 +129,30 @@ export default function Course ({match}) {
     return function cleanup(){
       abortController.abort()
     }
-  }, [match.params.courseId])
-  const removeCourse = (course) => {
+  }, [match.params.groupId])
+  const removeGroup = (group) => {
     setValues({...values, redirect:true})
   }
-  const addLesson = (course) => {
-    setCourse(course)
+  const addLab = (group) => {
+    setGroup(group)
   }
   const clickPublish = () => {
-    if(course.lessons.length > 0){    
+    if(group.labs.length > 0){    
       setOpen(true)
     }
   }
   const publish = () => {
-    let courseData = new FormData()
-      courseData.append('published', true)
+    let groupData = new FormData()
+      groupData.append('published', true)
       update({
-          courseId: match.params.courseId
+          groupId: match.params.groupId
         }, {
           t: jwt.token
-        }, courseData).then((data) => {
+        }, groupData).then((data) => {
           if (data && data.error) {
             setValues({...values, error: data.error})
           } else {
-            setCourse({...course, published: true})
+            setGroup({...group, published: true})
             setOpen(false)
           }
       })
@@ -161,38 +161,38 @@ export default function Course ({match}) {
     setOpen(false)
   }
   if (values.redirect) {
-    return (<Redirect to={'/teach/courses'}/>)
+    return (<Redirect to={'/teach/groups'}/>)
   }
-    const imageUrl = course._id
-          ? `/api/courses/photo/${course._id}?${new Date().getTime()}`
-          : '/api/courses/defaultphoto'
+    const imageUrl = group._id
+          ? `/api/groups/photo/${group._id}?${new Date().getTime()}`
+          : '/api/groups/defaultphoto'
     return (
         <div className={classes.root}>
               <Card className={classes.card}>
                 <CardHeader
-                  title={course.name}
+                  title={group.name}
                   subheader={<div>
-                        <Link to={"/user/"+course.instructor._id} className={classes.sub}>By {course.instructor.name}</Link>
-                        <span className={classes.category}>{course.category}</span>
+                        <Link to={"/user/"+group.instructor._id} className={classes.sub}>By {group.instructor.name}</Link>
+                        <span className={classes.category}>{group.category}</span>
                       </div>
                     }
                   action={<>
-             {auth.isAuthenticated().user && auth.isAuthenticated().user._id == course.instructor._id &&
+             {auth.isAuthenticated().user && auth.isAuthenticated().user._id == group.instructor._id &&
                 (<span className={classes.action}>
-                  <Link to={"/teach/course/edit/" + course._id}>
+                  <Link to={"/teach/group/edit/" + group._id}>
                     <IconButton aria-label="Edit" color="secondary">
                       <Edit/>
                     </IconButton>
                   </Link>
-                {!course.published ? (<>
-                  <Button color="secondary" variant="outlined" onClick={clickPublish}>{course.lessons.length == 0 ? "Add atleast 1 lesson to publish" : "Publish"}</Button>
-                  <DeleteCourse course={course} onRemove={removeCourse}/>
+                {!group.published ? (<>
+                  <Button color="secondary" variant="outlined" onClick={clickPublish}>{group.labs.length == 0 ? "Add atleast 1 lab to publish" : "Publish"}</Button>
+                  <DeleteGroup group={group} onRemove={removeGroup}/>
                 </>) : (
                   <Button color="primary" variant="outlined">Published</Button>
                 )}
                 </span>)
              }
-                {course.published && (<div>
+                {group.published && (<div>
                   <span className={classes.statSpan}><PeopleIcon /> {stats.totalEnrolled} enrolled </span>
                   <span className={classes.statSpan}><CompletedIcon/> {stats.totalCompleted} completed </span>
                   </div>
@@ -205,14 +205,14 @@ export default function Course ({match}) {
                   <CardMedia
                     className={classes.media}
                     image={imageUrl}
-                    title={course.name}
+                    title={group.name}
                   />
                   <div className={classes.details}>
                     <Typography variant="body1" className={classes.subheading}>
-                        {course.description}<br/>
+                        {group.description}<br/>
                     </Typography>
                     
-              {course.published && <div className={classes.enroll}><Enroll courseId={course._id}/></div>} 
+              {group.published && <div className={classes.enroll}><Enroll groupId={group._id}/></div>} 
                     
                     
                   </div>
@@ -220,18 +220,18 @@ export default function Course ({match}) {
                 <Divider/>
                 <div>
                 <CardHeader
-                  title={<Typography variant="h6" className={classes.subheading}>Lessons</Typography>
+                  title={<Typography variant="h6" className={classes.subheading}>Labs</Typography>
                 }
-                  subheader={<Typography variant="body1" className={classes.subheading}>{course.lessons && course.lessons.length} lessons</Typography>}
+                  subheader={<Typography variant="body1" className={classes.subheading}>{group.labs && group.labs.length} labs</Typography>}
                   action={
-             auth.isAuthenticated().user && auth.isAuthenticated().user._id == course.instructor._id && !course.published &&
+             auth.isAuthenticated().user && auth.isAuthenticated().user._id == group.instructor._id && !group.published &&
                 (<span className={classes.action}>
-                  <NewLesson courseId={course._id} addLesson={addLesson}/>
+                  <NewLab groupId={group._id} addLab={addLab}/>
                 </span>)
             }
                 />
                 <List>
-                {course.lessons && course.lessons.map((lesson, index) => {
+                {group.labs && group.labs.map((lab, index) => {
                     return(<span key={index}>
                     <ListItem>
                     <ListItemAvatar>
@@ -240,7 +240,7 @@ export default function Course ({match}) {
                         </Avatar>
                     </ListItemAvatar>
                     <ListItemText
-                        primary={lesson.title}
+                        primary={lab.title}
                     />
                     </ListItem>
                     <Divider variant="inset" component="li" />
@@ -251,9 +251,9 @@ export default function Course ({match}) {
                 </div>
               </Card>
               <Dialog open={open} onClose={handleClose} aria-labelledby="form-dialog-title">
-                <DialogTitle id="form-dialog-title">Publish Course</DialogTitle>
+                <DialogTitle id="form-dialog-title">Publish Group</DialogTitle>
                 <DialogContent>
-                  <Typography variant="body1">Publishing your course will make it live to students for enrollment. </Typography><Typography variant="body1">Make sure all lessons are added and ready for publishing.</Typography></DialogContent>
+                  <Typography variant="body1">Publishing your group will make it live to students for enrollment. </Typography><Typography variant="body1">Make sure all labs are added and ready for publishing.</Typography></DialogContent>
                 <DialogActions>
                 <Button onClick={handleClose} color="primary" variant="contained">
                   Cancel

@@ -22,7 +22,7 @@ export default function Enroll(props) {
   const jwt = auth.isAuthenticated()
   const clickEnroll = () => {
     create({
-      courseId: props.courseId
+      groupId: props.groupId
     }, {
       t: jwt.token
     }).then((data) => {
@@ -44,5 +44,5 @@ export default function Enroll(props) {
 }
 
 Enroll.propTypes = {
-  courseId: PropTypes.string.isRequired
+  groupId: PropTypes.string.isRequired
 }

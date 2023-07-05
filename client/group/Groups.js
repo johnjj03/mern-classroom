@@ -5,8 +5,8 @@ import GridList from '@material-ui/core/GridList'
 import GridListTile from '@material-ui/core/GridListTile'
 import GridListTileBar from '@material-ui/core/GridListTileBar'
 import {Link} from 'react-router-dom'
-import auth from './../auth/auth-helper'
-import Enroll from './../enrollment/Enroll'
+import auth from '../auth/auth-helper'
+import Enroll from '../enrollment/Enroll'
 
 const useStyles = makeStyles(theme => ({
   title: {
@@ -44,24 +44,24 @@ const useStyles = makeStyles(theme => ({
   }
 }))
 
-export default function Courses(props){
+export default function Groups(props){
   const classes = useStyles()
-  const findCommon = (course) => {
-    return !props.common.find((enrolled)=>{return enrolled.course._id == course._id})
+  const findCommon = (group) => {
+    return !props.common.find((enrolled)=>{return enrolled.group._id == group._id})
   }
     return (
         <GridList cellHeight={220} className={classes.gridList} cols={2}>
-          {props.courses.map((course, i) => {
+          {props.groups.map((group, i) => {
             return (
-            findCommon(course) &&
+            findCommon(group) &&
               <GridListTile className={classes.tile} key={i} style={{padding:0}}>
-                <Link to={"/course/"+course._id}><img className={classes.image} src={'/api/courses/photo/'+course._id} alt={course.name} /></Link>
+                <Link to={"/group/"+group._id}><img className={classes.image} src={'/api/groups/photo/'+group._id} alt={group.name} /></Link>
                 <GridListTileBar className={classes.tileBar}
-                  title={<Link to={"/course/"+course._id} className={classes.tileTitle}>{course.name}</Link>}
-                  subtitle={<span>{course.category}</span>}
+                  title={<Link to={"/group/"+group._id} className={classes.tileTitle}>{group.name}</Link>}
+                  subtitle={<span>{group.category}</span>}
                   actionIcon={
                     <div className={classes.action}>
-                    {auth.isAuthenticated() ? <Enroll courseId={course._id}/> : <Link to="/signin">Sign in to Enroll</Link>}
+                    {auth.isAuthenticated() ? <Enroll groupId={group._id}/> : <Link to="/signin">Sign in to Enroll</Link>}
                     </div>
                   }
                 />
@@ -72,6 +72,6 @@ export default function Courses(props){
     )
 }
 
-Courses.propTypes = {
-  courses: PropTypes.array.isRequired
+Groups.propTypes = {
+  groups: PropTypes.array.isRequired
 }

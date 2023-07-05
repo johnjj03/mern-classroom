@@ -8,11 +8,11 @@ import EditProfile from './user/EditProfile'
 import Profile from './user/Profile'
 import PrivateRoute from './auth/PrivateRoute'
 import Menu from './core/Menu'
-import NewCourse from './course/NewCourse'
-//import Courses from './course/Courses'
-import Course from './course/Course'
-import EditCourse from './course/EditCourse'
-import MyCourses from './course/MyCourses'
+import NewGroup from './group/NewGroup'
+//import Groups from './group/Groups'
+import Group from './group/Group'
+import EditGroup from './group/EditGroup'
+import MyGroups from './group/MyGroups'
 import Enrollment from './enrollment/Enrollment'
 
 const MainRouter = () => {
@@ -25,12 +25,12 @@ const MainRouter = () => {
         <Route path="/signin" component={Signin}/>
         <PrivateRoute path="/user/edit/:userId" component={EditProfile}/>
         <Route path="/user/:userId" component={Profile}/>
-        <Route path="/course/:courseId" component={Course}/>
-        <PrivateRoute path="/teach/courses" component={MyCourses}/>
+        <Route path="/group/:groupId" component={Group}/>
+        <PrivateRoute path="/teach/groups" component={MyGroups}/>
         
-        <PrivateRoute path="/teach/course/new" component={NewCourse}/>
-        <PrivateRoute path="/teach/course/edit/:courseId" component={EditCourse}/>
-        <PrivateRoute path="/teach/course/:courseId" component={Course}/>
+        <PrivateRoute path="/teach/group/new" component={NewGroup}/>
+        <PrivateRoute path="/teach/group/edit/:groupId" component={EditGroup}/>
+        <PrivateRoute path="/teach/group/:groupId" component={Group}/>
         <PrivateRoute path="/learn/:enrollmentId" component={Enrollment}/>
 
       </Switch>
