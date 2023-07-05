@@ -8,8 +8,8 @@ const EnrollmentSchema = new mongoose.Schema({
     default: Date.now
   },
   student: {type: mongoose.Schema.ObjectId, ref: 'User'},
-  lessonStatus: [{
-      lesson: {type: mongoose.Schema.ObjectId, ref: 'Lab'}, 
+  labStatus: [{
+      lab: {type: mongoose.Schema.ObjectId, ref: 'Lab'}, 
       complete: Boolean}],
   completed: Date
 })
