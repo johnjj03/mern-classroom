@@ -1,15 +1,26 @@
 import mongoose from 'mongoose'
 
 const LabSchema = new mongoose.Schema({
-  title: String,
-  content: String,
-  resource_url: String
+  title: {
+      type: String,
+      required: 'Title is required',
+  },
+
+  content: {
+      type: String,
+      required: 'Content is required',
+  },
+  resource_url: {
+      type: String,
+      required: 'Resource URL is required',       
+  }
 })
-const Lab = mongoose.model('Lab', LabSchema)
+
 const GroupSchema = new mongoose.Schema({
   name: {
     type: String,
     trim: true,
+    unique: true,
     required: 'Name is required'
   },
   image: {
@@ -34,7 +45,14 @@ const GroupSchema = new mongoose.Schema({
     type: Boolean,
     default: false
   },
+  code : {
+    type: String,
+    minlength: 6,
+    maxlength: 6,
+    unique: true,
+  },
   labs: [LabSchema]
-})
+});
 
-export default mongoose.model('Group', GroupSchema)
+
+export default mongoose.model('Group', GroupSchema);

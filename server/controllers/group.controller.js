@@ -16,6 +16,11 @@ const create = (req, res) => {
     }
     let group = new Group(fields)
     group.instructor= req.profile
+
+    //Generating a random string for the group code
+    group.code = Math.random().toString(36).substring(2, 8)
+    group.code = group.code.toUpperCase()
+    
     if(files.image){
       group.image.data = fs.readFileSync(files.image.path)
       group.image.contentType = files.image.type
