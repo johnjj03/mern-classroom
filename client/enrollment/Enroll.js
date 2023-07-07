@@ -26,7 +26,10 @@ export default function Enroll(props) {
     }, {
       t: jwt.token
     }).then((data) => {
-      if (data && data.error) {
+      if(!data){
+        setValues({...values, error: "Invalid Code"})
+      } 
+      else if (data.error) {
         setValues({...values, error: data.error})
       } else {
         setValues({...values, enrollmentId: data._id, redirect: true})

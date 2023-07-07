@@ -55,6 +55,23 @@ const groupByID = async (req, res, next, id) => {
   }
 }
 
+const groupByCode = async (req, res, next, code) => {
+  try {
+    let group = await Group.findOne({code: code}).populate('instructor', '_id name')
+    if (!group)
+      return res.status('400').json({
+        error: "Group not found"
+      })
+    req.group = group
+    next()
+  } catch (err) {
+    return res.status('400').json({
+      error: "Could not retrieve group"
+    })
+  }
+}
+
+
 const read = (req, res) => {
   req.group.image = undefined
   return res.json(req.group)
@@ -183,5 +200,6 @@ export default {
   photo,
   defaultPhoto,
   newLab,
-  listPublished
+  listPublished,
+  groupByCode
 }

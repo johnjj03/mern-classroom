@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react'
+import React, { useState, useEffect } from 'react'
 import { makeStyles } from '@material-ui/core/styles'
 import Paper from '@material-ui/core/Paper'
 import List from '@material-ui/core/List'
@@ -12,8 +12,8 @@ import Button from '@material-ui/core/Button'
 import Typography from '@material-ui/core/Typography'
 import Divider from '@material-ui/core/Divider'
 import auth from '../auth/auth-helper'
-import {listByInstructor} from './api-group.js'
-import {Redirect, Link} from 'react-router-dom'
+import { listByInstructor } from './api-group.js'
+import { Redirect, Link } from 'react-router-dom'
 
 const useStyles = makeStyles(theme => ({
   root: theme.mixins.gutters({
@@ -23,19 +23,19 @@ const useStyles = makeStyles(theme => ({
     marginTop: theme.spacing(12)
   }),
   title: {
-    margin: `${theme.spacing(3)}px 0 ${theme.spacing(3)}px ${theme.spacing(1)}px` ,
+    margin: `${theme.spacing(3)}px 0 ${theme.spacing(3)}px ${theme.spacing(1)}px`,
     color: theme.palette.protectedTitle,
     fontSize: '1.2em'
   },
-  addButton:{
-    float:'right'
+  addButton: {
+    float: 'right'
   },
   leftIcon: {
     marginRight: "8px"
   },
   avatar: {
     borderRadius: 0,
-    width:65,
+    width: 65,
     height: 40
   },
   listText: {
@@ -43,7 +43,7 @@ const useStyles = makeStyles(theme => ({
   }
 }))
 
-export default function MyGroups(){
+export default function MyGroups() {
   const classes = useStyles()
   const [groups, setGroups] = useState([])
   const [redirectToSignin, setRedirectToSignin] = useState(false)
@@ -54,20 +54,21 @@ export default function MyGroups(){
     const signal = abortController.signal
     listByInstructor({
       userId: jwt.user._id
-    }, {t: jwt.token}, signal).then((data) => {
-      if (data.error) {
+    }, { t: jwt.token }, signal).then((data) => {
+      if (!(data) || (data.error)) {
         setRedirectToSignin(true)
-      } else {
+      }
+      else {
         setGroups(data)
       }
     })
-    return function cleanup(){
+    return function cleanup() {
       abortController.abort()
     }
   }, [])
 
   if (redirectToSignin) {
-    return <Redirect to='/signin'/>
+    return <Redirect to='/signin' />
   }
   return (
     <div>
@@ -83,16 +84,17 @@ export default function MyGroups(){
           </span>
         </Typography>
         <List dense>
-        {groups.map((group, i) => {
-            return   <Link to={"/teach/group/"+group._id} key={i}>
+          {groups.map((group, i) => {
+            return <Link to={"/teach/group/" + group._id} key={i}>
               <ListItem button>
                 <ListItemAvatar>
-                  <Avatar src={'/api/groups/photo/'+group._id+"?" + new Date().getTime()} className={classes.avatar}/>
+                  <Avatar src={'/api/groups/photo/' + group._id + "?" + new Date().getTime()} className={classes.avatar} />
                 </ListItemAvatar>
-                <ListItemText primary={group.name} secondary={group.description} className={classes.listText}/>
+                <ListItemText primary={group.name} secondary={group.description} className={classes.listText} />
               </ListItem>
-              <Divider/>
-            </Link>})}
+              <Divider />
+            </Link>
+          })}
         </List>
       </Paper>
     </div>)

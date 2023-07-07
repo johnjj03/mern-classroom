@@ -20,9 +20,31 @@ const create = async (req, res) => {
   }
 }
 
+const join = async (req, res) => {
+  let newEnrollment = {
+    group: req.group,
+    student: req.auth,
+  }
+  newEnrollment.labStatus = req.group.labs.map((lab)=>{
+    return {lab: lab, complete:false}
+  })
+  const enrollment = new Enrollment(newEnrollment)
+  try {
+    let result = await enrollment.save()
+    return res.status(200).json(result)
+  } catch (err) {
+    return res.status(400).json({
+      error: errorHandler.getErrorMessage(err)
+    })
+  }
+}
+
+
 /**
  * Load enrollment and append to req.
  */
+
+
 const enrollmentByID = async (req, res, next, id) => {
   try {
     let enrollment = await Enrollment.findById(id)
@@ -133,5 +155,6 @@ export default {
   isStudent,
   listEnrolled,
   findEnrollment,
-  enrollmentStats
+  enrollmentStats,
+  join
 }

@@ -13,6 +13,21 @@ const create = async (params, credentials) => {
       console.log(err)
     }
   }
+const join = async (params, credentials) => {
+  try {
+    let response = await fetch('/api/enrollment/new/'+params.code, {
+      method: 'POST',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + credentials.t
+      },
+    })
+    return await response.json()
+  } catch (err) {
+    console.log(err)
+  }
+}
   
   const listEnrolled = async (credentials, signal) => {
     try {
@@ -95,12 +110,13 @@ const create = async (params, credentials) => {
       console.log(err)
     }
   }
-  
+
   export {
     create,
     read,
     complete,
     remove,
     listEnrolled,
-    enrollmentStats
+    enrollmentStats,
+    join
   }
