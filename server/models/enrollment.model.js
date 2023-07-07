@@ -17,8 +17,9 @@ const EnrollmentSchema = new mongoose.Schema({
     type: String,
     minlength: 6,
     maxlength: 6,
-    unique: true,
   }
 })
+
+EnrollmentSchema.index({student: 1, group: 1}, {unique: true})
 
 export default mongoose.model('Enrollment', EnrollmentSchema)

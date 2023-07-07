@@ -22,6 +22,8 @@ export default function DeleteGroup(props) {
     remove({
       groupId: props.group._id
     }, {t: jwt.token}).then((data) => {
+      if(!data)
+        console.log("Group not found")
       if (data.error) {
         console.log(data.error)
       } else {

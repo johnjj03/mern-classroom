@@ -74,6 +74,24 @@ const create = async (params, credentials, group) => {
     }
   }
 
+  const removeall = async (params, credentials) => {
+    try {
+      let response = await fetch('/api/enrollment/remove/' + params.groupId, {
+        method: 'DELETE',
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ' + credentials.t
+        }
+      })
+      return await response.json()
+    }
+    catch(err) {
+      console.log(err)
+    }
+  }
+
+
   const listByInstructor = async (params, credentials, signal) => {
     try {
       let response = await fetch('/api/groups/by/'+params.userId, {
@@ -127,6 +145,7 @@ const create = async (params, credentials, group) => {
     read,
     update,
     remove,
+    removeall,
     listByInstructor,
     newLab,
     listPublished

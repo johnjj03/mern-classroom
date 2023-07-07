@@ -22,6 +22,7 @@ const join = async (params, credentials) => {
         'Content-Type': 'application/json',
         'Authorization': 'Bearer ' + credentials.t
       },
+      body: JSON.stringify(params)
     })
     return await response.json()
   } catch (err) {

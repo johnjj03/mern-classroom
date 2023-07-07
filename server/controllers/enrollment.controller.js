@@ -24,6 +24,7 @@ const join = async (req, res) => {
   let newEnrollment = {
     group: req.group,
     student: req.auth,
+    code : req.body.code
   }
   newEnrollment.labStatus = req.group.labs.map((lab)=>{
     return {lab: lab, complete:false}
@@ -96,6 +97,19 @@ const remove = async (req, res) => {
   }
 }
 
+const removeall = async (req, res) => {
+  try {
+    let group = req.group
+    let deletedGroup = await Enrollment.deleteMany({group:group._id})
+    // res.json(deletedGroup)
+  } catch (err) {
+    return res.status(400).json({
+      error: errorHandler.getErrorMessage(err)
+    })
+  }
+}
+
+
 const isStudent = (req, res, next) => {
   const isStudent = req.auth && req.auth._id == req.enrollment.student._id
   if (!isStudent) {
@@ -151,6 +165,7 @@ export default {
   enrollmentByID,
   read,
   remove,
+  removeall,
   complete,
   isStudent,
   listEnrolled,
