@@ -11,8 +11,8 @@ router.route('/api/enrollment/enrolled')
 // router.route('/api/enrollment/new/:groupId')
 //   .post(authCtrl.requireSignin, enrollmentCtrl.findEnrollment, enrollmentCtrl.create)
 
-router.route('/api/enrollment/remove/:groupId')
-  .delete(authCtrl.requireSignin, authCtrl.hasAuthorization , enrollmentCtrl.removeall)
+// router.route('/api/enrollment/remove/:groupId')
+//   .delete(authCtrl.requireSignin, authCtrl.hasAuthorization , enrollmentCtrl.removeall)
 
 router.route('/api/enrollment/new/:groupCode')
       .post(authCtrl.requireSignin,
@@ -31,6 +31,9 @@ router.route('/api/enrollment/:enrollmentId')
 
 router.route('/api/enrollment/join/:enrollmentCode')
   .post(authCtrl.requireSignin, enrollmentCtrl.isStudent,enrollmentCtrl.create)
+
+router.route('/api/enrollment/students/:groupId')
+  .get(authCtrl.requireSignin, enrollmentCtrl.getStudents)
 
 router.param('groupId', groupCtrl.groupByID)
 router.param('enrollmentId', enrollmentCtrl.enrollmentByID)

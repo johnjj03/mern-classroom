@@ -15,7 +15,7 @@ import ListItemAvatar from '@material-ui/core/ListItemAvatar'
 import Avatar from '@material-ui/core/Avatar'
 import ListItemText from '@material-ui/core/ListItemText'
 import { read, update } from './api-group.js'
-import { enrollmentStats } from '../enrollment/api-enrollment.js'
+import { enrollmentStats, getStudents } from '../enrollment/api-enrollment.js'
 import { Link, Redirect } from 'react-router-dom'
 import auth from '../auth/auth-helper.js'
 import DeleteGroup from './DeleteGroup.js'
@@ -32,14 +32,17 @@ const useStyles = makeStyles(theme => ({
     maxWidth: 800,
     margin: 'auto',
     padding: theme.spacing(3),
-    marginTop: theme.spacing(12)
+    // marginTop: theme.spacing(12)
+    marginTop: 35,
+    display: 'flex'
   }),
   flex: {
     display: 'flex',
     marginBottom: 20
   },
   card: {
-    padding: '24px 40px 40px'
+    padding: '24px 40px 40px',
+    margin: '20px'
   },
   subheading: {
     margin: '10px',
@@ -98,12 +101,14 @@ export default function Group({ match }) {
   const classes = useStyles()
   const [stats, setStats] = useState({})
   const [group, setGroup] = useState({ instructor: {} })
+  const [students, setStudents] = useState({student:[]})
   const [values, setValues] = useState({
     redirect: false,
     error: ''
   })
   const [open, setOpen] = useState(false)
   const jwt = auth.isAuthenticated()
+
   useEffect(() => {
     const abortController = new AbortController()
     const signal = abortController.signal
@@ -121,6 +126,7 @@ export default function Group({ match }) {
       abortController.abort()
     }
   }, [match.params.groupId])
+
   useEffect(() => {
     const abortController = new AbortController()
     const signal = abortController.signal
@@ -136,6 +142,27 @@ export default function Group({ match }) {
       abortController.abort()
     }
   }, [match.params.groupId])
+
+  useEffect(() => {
+    const abortController = new AbortController()
+    const signal = abortController.signal
+
+    getStudents({ groupId: match.params.groupId }, { t: jwt.token }, signal).then((data) => {
+      if (!(data))
+        console.log("No data")
+      else if (data.error) {
+        setValues({ ...values, error: data.error })
+      }
+      else {
+        setStudents(data)
+      }
+    })
+    return function cleanup() {
+      abortController.abort()
+    }
+  }, [match.params.groupId])
+
+
   const removeGroup = (group) => {
     setValues({ ...values, redirect: true })
   }
@@ -172,6 +199,7 @@ export default function Group({ match }) {
   const imageUrl = group._id
     ? `/api/groups/photo/${group._id}?${new Date().getTime()}`
     : '/api/groups/defaultphoto'
+
   return (
     <div className={classes.root}>
       <Card className={classes.card}>
@@ -225,8 +253,6 @@ export default function Group({ match }) {
               <div className={classes.enroll}><Enroll groupId={group._id}/></div>
               }  */}
 
-
-
           </div>
         </div>
         <Divider />
@@ -262,20 +288,16 @@ export default function Group({ match }) {
           </List>
         </div>
       </Card>
-      <Dialog open={open} onClose={handleClose} aria-labelledby="form-dialog-title">
-        <DialogTitle id="form-dialog-title">Publish Group</DialogTitle>
-        <DialogContent>
-          <Typography variant="body1">Publishing your group will make it live to students for enrollment. </Typography>
-          <Typography variant="body1">Make sure all labs are added and ready for publishing.</Typography>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleClose} color="primary" variant="contained">
-            Cancel
-          </Button>
-          <Button onClick={publish} color="secondary" variant="contained">
-            Publish
-          </Button>
-        </DialogActions>
-      </Dialog>
+      <Card className={classes.card}>
+        <List>
+          {students && Array.isArray(students) && students.map((student) => (
+            <ListItem key={student._id}>
+              <Link to={"/user/" + student._id}>
+                <ListItemText primary={student.name} />
+              </Link>
+            </ListItem>
+          ))}
+        </List>
+      </Card>
     </div>)
 }

@@ -109,7 +109,7 @@ export default function Home() {
     const signal = abortController.signal
     listEnrolled({ t: jwt.token }, signal).then((data) => {
       if(!data){
-        console.log('Error')
+        abortController.abort()
       }
       else if (data.error) {
         console.log(data.error)
@@ -125,7 +125,9 @@ export default function Home() {
     const abortController = new AbortController()
     const signal = abortController.signal
     listPublished(signal).then((data) => {
-      if (data.error) {
+      if(!(data))
+        abortController.abort()
+      else if (data.error) {
         console.log(data.error)
       } else {
         setGroups(data)

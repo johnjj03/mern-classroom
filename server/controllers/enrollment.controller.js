@@ -1,13 +1,14 @@
 import Enrollment from '../models/enrollment.model'
 import errorHandler from './../helpers/dbErrorHandler'
+import User from '../models/user.model'
 
 const create = async (req, res) => {
   let newEnrollment = {
     group: req.group,
     student: req.auth,
   }
-  newEnrollment.labStatus = req.group.labs.map((lab)=>{
-    return {lab: lab, complete:false}
+  newEnrollment.labStatus = req.group.labs.map((lab) => {
+    return { lab: lab, complete: false }
   })
   const enrollment = new Enrollment(newEnrollment)
   try {
@@ -24,10 +25,10 @@ const join = async (req, res) => {
   let newEnrollment = {
     group: req.group,
     student: req.auth,
-    code : req.body.code
+    code: req.params.code
   }
-  newEnrollment.labStatus = req.group.labs.map((lab)=>{
-    return {lab: lab, complete:false}
+  newEnrollment.labStatus = req.group.labs.map((lab) => {
+    return { lab: lab, complete: false }
   })
   const enrollment = new Enrollment(newEnrollment)
   try {
@@ -36,6 +37,29 @@ const join = async (req, res) => {
   } catch (err) {
     return res.status(400).json({
       error: errorHandler.getErrorMessage(err)
+    })
+  }
+}
+
+const getStudents = async (req, res) => {
+  try {
+
+    const groupId = req.params.groupId;
+    const enrollments = await Enrollment.find({ group: groupId })
+    const userIds = enrollments.map((enrollment) => enrollment.student);
+
+    const UserPromises = userIds.map(async (userId) => {
+      const user = await User.findById(userId).select('name email');
+      return user;
+    });
+    const UsersData = await Promise.all(UserPromises)
+
+    res.json(UsersData);
+  }
+  catch (err) {
+    console.error(err);
+    return res.status('400').json({
+      error: "Enrollment not found"
     })
   }
 }
@@ -49,8 +73,8 @@ const join = async (req, res) => {
 const enrollmentByID = async (req, res, next, id) => {
   try {
     let enrollment = await Enrollment.findById(id)
-                                    .populate({path: 'group', populate:{ path: 'instructor'}})
-                                    .populate('student', '_id name')
+      .populate({ path: 'group', populate: { path: 'instructor' } })
+      .populate('student', '_id name')
     if (!enrollment)
       return res.status('400').json({
         error: "Enrollment not found"
@@ -70,19 +94,19 @@ const read = (req, res) => {
 
 const complete = async (req, res) => {
   let updatedData = {}
-  updatedData['labStatus.$.complete']= req.body.complete 
+  updatedData['labStatus.$.complete'] = req.body.complete
   updatedData.updated = Date.now()
-  if(req.body.groupCompleted)
+  if (req.body.groupCompleted)
     updatedData.completed = req.body.groupCompleted
 
-    try {
-      let enrollment = await Enrollment.updateOne({'labStatus._id':req.body.labStatusId}, {'$set': updatedData})
-      res.json(enrollment)
-    } catch (err) {
-      return res.status(400).json({
-        error: errorHandler.getErrorMessage(err)
-      })
-    }
+  try {
+    let enrollment = await Enrollment.updateOne({ 'labStatus._id': req.body.labStatusId }, { '$set': updatedData })
+    res.json(enrollment)
+  } catch (err) {
+    return res.status(400).json({
+      error: errorHandler.getErrorMessage(err)
+    })
+  }
 }
 
 const remove = async (req, res) => {
@@ -100,7 +124,7 @@ const remove = async (req, res) => {
 const removeall = async (req, res) => {
   try {
     let group = req.group
-    let deletedGroup = await Enrollment.deleteMany({group:group._id})
+    let deletedGroup = await Enrollment.deleteMany({ group: group._id })
     // res.json(deletedGroup)
   } catch (err) {
     return res.status(400).json({
@@ -122,7 +146,7 @@ const isStudent = (req, res, next) => {
 
 const listEnrolled = async (req, res) => {
   try {
-    let enrollments = await Enrollment.find({student: req.auth._id}).sort({'completed': 1}).populate('group', '_id name category')
+    let enrollments = await Enrollment.find({ student: req.auth._id }).sort({ 'completed': 1 }).populate('group', '_id name category')
     res.json(enrollments)
   } catch (err) {
     console.log(err)
@@ -134,10 +158,10 @@ const listEnrolled = async (req, res) => {
 
 const findEnrollment = async (req, res, next) => {
   try {
-    let enrollments = await Enrollment.find({group:req.group._id, student: req.auth._id})
-    if(enrollments.length == 0){
+    let enrollments = await Enrollment.find({ group: req.group._id, student: req.auth._id })
+    if (enrollments.length == 0) {
       next()
-    }else{
+    } else {
       res.json(enrollments[0])
     }
   } catch (err) {
@@ -150,15 +174,17 @@ const findEnrollment = async (req, res, next) => {
 const enrollmentStats = async (req, res) => {
   try {
     let stats = {}
-    stats.totalEnrolled = await Enrollment.find({group:req.group._id}).countDocuments()
-    stats.totalCompleted = await Enrollment.find({group:req.group._id}).exists('completed', true).countDocuments()
-      res.json(stats)
+    stats.totalEnrolled = await Enrollment.find({ group: req.group._id }).countDocuments()
+    stats.totalCompleted = await Enrollment.find({ group: req.group._id }).exists('completed', true).countDocuments()
+    res.json(stats)
   } catch (err) {
     return res.status(400).json({
       error: errorHandler.getErrorMessage(err)
     })
   }
-} 
+}
+
+
 
 export default {
   create,
@@ -171,5 +197,6 @@ export default {
   listEnrolled,
   findEnrollment,
   enrollmentStats,
-  join
+  join,
+  getStudents
 }
