@@ -1,21 +1,5 @@
 import mongoose from 'mongoose'
 
-const LabSchema = new mongoose.Schema({
-  title: {
-      type: String,
-      required: 'Title is required',
-  },
-
-  content: {
-      type: String,
-      required: 'Content is required',
-  },
-  resource_url: {
-      type: String,
-      required: 'Resource URL is required',       
-  }
-})
-
 const GroupSchema = new mongoose.Schema({
   name: {
     type: String,
@@ -29,7 +13,10 @@ const GroupSchema = new mongoose.Schema({
   },
   description: {
     type: String,
-    trim: true
+    trim: true, 
+    required: 'Description is required',
+    min: 5,
+    max: 400
   },
   category: {
     type: String,
@@ -40,18 +27,37 @@ const GroupSchema = new mongoose.Schema({
     type: Date,
     default: Date.now
   },
-  instructor: {type: mongoose.Schema.ObjectId, ref: 'User'},
+  instructor: { 
+    type: mongoose.Schema.ObjectId, 
+    ref: 'User',
+    required: 'Instructor is required'
+   },
   published: {
     type: Boolean,
     default: false
   },
-  code : {
+  code: {
     type: String,
     minlength: 6,
     maxlength: 6,
     unique: true,
   },
-  labs: [LabSchema]
+  labs: [
+    {
+      type: mongoose.Schema.ObjectId,
+      ref: 'Lab'
+    }
+  ],
+  students: [
+    {
+      type:mongoose.Schema.ObjectId,
+      ref: 'User'
+    }
+  ],
+  dueDate: {
+    type: Date,
+    default: new Date(Date.now()+ (60 * 60 * 1000))
+  },
 });
 
 

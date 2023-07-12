@@ -10,6 +10,7 @@ import userRoutes from './routes/user.routes'
 import authRoutes from './routes/auth.routes'
 import groupRoutes from './routes/group.routes'
 import enrollmentRoutes from './routes/enrollment.routes'
+import config from './../config/config'
 
 // modules for server side rendering
 import React from 'react'
@@ -38,7 +39,14 @@ app.use(compress())
 // secure apps by setting various HTTP headers
 app.use(helmet())
 // enable CORS - Cross Origin Resource Sharing
-app.use(cors())
+app.use(cors({
+  // origin: 'https://risc-gen.tech',
+  origin: config.origin,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Authorization', 'DNT', 'User-Agent', 'X-Requested-With', 'If-Modified-Since', 'Cache-Control', 'Content-Type', 'Range'],  
+  credentials : true
+}));
+
 
 app.use('/dist', express.static(path.join(CURRENT_WORKING_DIR, 'dist')))
 
