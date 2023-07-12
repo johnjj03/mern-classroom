@@ -21,6 +21,7 @@ import auth from '../auth/auth-helper.js'
 import DeleteGroup from './DeleteGroup.js'
 import Divider from '@material-ui/core/Divider'
 import NewLab from './NewLab.js'
+import Grid from '@material-ui/core/Grid'
 import Dialog from '@material-ui/core/Dialog'
 import DialogActions from '@material-ui/core/DialogActions'
 import DialogContent from '@material-ui/core/DialogContent'
@@ -29,10 +30,12 @@ import Enroll from '../enrollment/Enroll.js'
 
 const useStyles = makeStyles(theme => ({
   root: theme.mixins.gutters({
-    maxWidth: 800,
+    maxWidth: 1200,
     margin: 'auto',
+    marginLeft: 130,
+    marginRight: 130,
     padding: theme.spacing(3),
-    // marginTop: theme.spacing(12)
+    // marginTop: theme.spacing(12),
     marginTop: 35,
     display: 'flex'
   }),
@@ -41,8 +44,20 @@ const useStyles = makeStyles(theme => ({
     marginBottom: 20
   },
   card: {
-    padding: '24px 40px 40px',
-    margin: '20px'
+    padding: '24px 10px 30px',
+    margin: '20px',
+    maxWidth: 1500,
+    marginRight: 60,
+    paddingLeft: 50,
+    paddingRight: 50,
+  },
+  studentCard: {
+    paddingTop: 44,
+    paddingBottom: 24,
+    paddingRight: 50,
+    paddingLeft: 40,
+    // margin: '20px',
+    marginTop: 20,
   },
   subheading: {
     margin: '10px',
@@ -101,7 +116,7 @@ export default function Group({ match }) {
   const classes = useStyles()
   const [stats, setStats] = useState({})
   const [group, setGroup] = useState({ instructor: {} })
-  const [students, setStudents] = useState({student:[]})
+  const [students, setStudents] = useState({ student: [] })
   const [values, setValues] = useState({
     redirect: false,
     error: ''
@@ -202,6 +217,7 @@ export default function Group({ match }) {
 
   return (
     <div className={classes.root}>
+      <Grid container justifyContent="center" alignItems="center">
       <Card className={classes.card}>
         <CardHeader
           title={group.name}
@@ -288,16 +304,35 @@ export default function Group({ match }) {
           </List>
         </div>
       </Card>
-      <Card className={classes.card}>
+      {/* <Card className={classes.card}>
         <List>
           {students && Array.isArray(students) && students.map((student) => (
             <ListItem key={student._id}>
               <Link to={"/user/" + student._id}>
                 <ListItemText primary={student.name} />
+                <ListItem primary={student.email} />
               </Link>
             </ListItem>
           ))}
         </List>
+      </Card> */}
+
+      <Card className={classes.studentCard}>
+        <Grid container spacing={4}>
+          {students && Array.isArray(students) && students.map((student) => (
+            <React.Fragment key={student._id}>
+              <Grid item xs={6}>
+                <Typography variant="body1">{student.name}:</Typography>
+              </Grid>
+              <Grid item xs={6}>
+                <Typography variant="body1">{student.email}</Typography>
+              </Grid>
+            </React.Fragment>
+          ))}
+        </Grid>
+        {students.length == 0 &&
+          <Typography variant="body1">No students enrolled yet</Typography>}
       </Card>
+      </Grid>
     </div>)
 }
