@@ -229,7 +229,8 @@ export default function Enrollment ({match}) {
                   title={enrollment.group.name}
                   subheader={<div>
                         <Link to={"/user/"+enrollment.group.instructor._id} className={classes.sub}>By {enrollment.group.instructor.name}</Link>
-                        <span className={classes.category}>{enrollment.group.category}</span>
+                        {/* <span className={classes.category}>{enrollment.group.category}</span> */}
+                        <span className={classes.category}>{enrollment.group.dueDate}</span>
                         <Typography variant="body1" style={{display:'flex',alignItems:'right'}}>{enrollment.group.code}</Typography>
                       </div>
                     }  

@@ -4,7 +4,6 @@ import Paper from '@material-ui/core/Paper'
 import List from '@material-ui/core/List'
 import ListItem from '@material-ui/core/ListItem'
 import ListItemAvatar from '@material-ui/core/ListItemAvatar'
-import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction'
 import ListItemText from '@material-ui/core/ListItemText'
 import Avatar from '@material-ui/core/Avatar'
 import Icon from '@material-ui/core/Icon'
@@ -84,7 +83,7 @@ export default function MyGroups() {
           </span>
         </Typography>
         <List dense>
-          {groups.map((group, i) => {
+          {groups && Array.isArray(groups) && groups.map((group, i) => {
             return <Link to={"/teach/group/" + group._id} key={i}>
               <ListItem button>
                 <ListItemAvatar>

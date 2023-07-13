@@ -20,7 +20,7 @@ import { Link, Redirect } from 'react-router-dom'
 import auth from '../auth/auth-helper.js'
 import DeleteGroup from './DeleteGroup.js'
 import Divider from '@material-ui/core/Divider'
-import NewLab from './NewLab.js'
+import NewLab from '../lab/NewLab.js'
 import Grid from '@material-ui/core/Grid'
 import Dialog from '@material-ui/core/Dialog'
 import DialogActions from '@material-ui/core/DialogActions'
@@ -223,7 +223,8 @@ export default function Group({ match }) {
           title={group.name}
           subheader={<div>
             <Link to={"/user/" + group.instructor._id} className={classes.sub}>By {group.instructor.name}</Link>
-            <span className={classes.category}>{group.category}</span>
+            {/* <span className={classes.category}>{group.category}</span> */}
+            <span className={classes.category}>{group.dueDate}</span>
           </div>
           }
           action={<>

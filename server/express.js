@@ -10,6 +10,7 @@ import userRoutes from './routes/user.routes'
 import authRoutes from './routes/auth.routes'
 import groupRoutes from './routes/group.routes'
 import enrollmentRoutes from './routes/enrollment.routes'
+import labRoutes from './routes/lab.routes'
 import config from './../config/config'
 
 // modules for server side rendering
@@ -55,6 +56,7 @@ app.use('/', userRoutes)
 app.use('/', authRoutes)
 app.use('/', groupRoutes)
 app.use('/', enrollmentRoutes)
+app.use('/',labRoutes)
 
 app.get('*', (req, res) => {
   const sheets = new ServerStyleSheets()

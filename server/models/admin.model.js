@@ -21,7 +21,7 @@ const AdminSchema = new mongoose.Schema({
   salt: String,
   educator: {
     type: Boolean,
-    default: false
+    default: true
   },
   groups: [
     {

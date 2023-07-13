@@ -163,7 +163,8 @@ const listByInstructor = (req, res) => {
   Group.find({ instructor: req.profile._id }, (err, groups) => {
     if (err) {
       return res.status(400).json({
-        error: errorHandler.getErrorMessage(err)
+        // error: errorHandler.getErrorMessage(err)
+        error : err
       })
     }
     res.json(groups)

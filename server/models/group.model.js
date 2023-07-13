@@ -18,10 +18,10 @@ const GroupSchema = new mongoose.Schema({
     min: 5,
     max: 400
   },
-  category: {
-    type: String,
-    required: 'Category is required'
-  },
+  // category: {
+  //   type: String,
+  //   required: 'Category is required'
+  // },
   updated: Date,
   created: {
     type: Date,
@@ -41,6 +41,7 @@ const GroupSchema = new mongoose.Schema({
     minlength: 6,
     maxlength: 6,
     unique: true,
+    required: true
   },
   labs: [
     {
